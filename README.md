@@ -1,3 +1,2 @@
-# SQL
- SQL Projects
+SQL Projects
 SQL projects for job interview
