@@ -1,11 +1,4 @@
-DROP DATABASE scranton;
-
-DROP TABLE employees cascade;
-DROP TABLE branch CASCADE;
-DROP TABLE client CASCADE;
-DROP TABLE works_with ;
-
-			
+CREATE SCHEMA the_office;		
 -- tworzenie tabel 
 CREATE TABLE employees 
 (
