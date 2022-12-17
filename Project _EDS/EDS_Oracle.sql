@@ -1084,4 +1084,134 @@ WHERE
 
 
 
+--find names of employees whose department does not appear in the DEPT table 
+SELECT 
+	name 
+FROM 
+	EMPLOYEES 
+WHERE 
+	DEPT_ID NOT IN 
+		(SELECT DEPT_ID
+		FROM DEPARTMENT);
+	
+--using subquery, find names and location of departments which do not hire any employees 
+SELECT 
+	name, 
+	location 
+FROM 
+	DEPARTMENT 
+WHERE 
+	DEPT_ID NOT IN 
+	(SELECT DEPT_ID
+	FROM EMPLOYEES);
+
+--find name, salary and job of all employees who earn the maximum salary within their job
+-- order the results by salary, descending 
+WITH ms AS (
+			SELECT 
+				e.*,
+				MAX(salary) OVER (PARTITION BY job) maxsalary
+			FROM EMPLOYEES e
+			)
+SELECT 
+	name, 
+	salary, 
+	job 
+FROM ms 
+WHERE salary = maxsalary
+ORDER BY SALARY DESC ;
+
+
+--find name, salary and job of all employees who earn the minimum salary within their job
+-- order the results by salary, descending 
+WITH ms AS (
+			SELECT 
+				e.*,
+				MIN(salary) OVER (PARTITION BY job) minsalary
+			FROM EMPLOYEES e
+			)
+SELECT 
+	name, 
+	salary, 
+	job 
+FROM ms 
+WHERE salary = minsalary
+ORDER BY SALARY DESC ;
+
+--find name and location of each department 
+--and name and date of an employee that was hired the most recently (in each dept)
+WITH hire AS (
+			SELECT 
+				e.*,
+				MAX(hire_date) OVER (PARTITION BY dept_id) maxhire
+				FROM EMPLOYEES e
+			)
+SELECT 
+	hire.name,
+	hire.hire_date,
+	d.name,
+	d.location
+FROM hire 
+JOIN DEPARTMENT d
+ON hire.DEPT_ID = d.dept_id
+WHERE hire.hire_date = maxhire
+ORDER BY HIRE_DATE DESC;
+
+--find name, salary and dept name of emplyees whose salary exceeds 
+-- the averege salary in their pay grade 
+WITH averege AS (
+				SELECT 
+					e.*,
+					AVG(e.salary) OVER (PARTITION BY s.grade) avgsal
+				FROM 
+					EMPLOYEES e
+				JOIN 
+					SALGRADE s 
+				ON e.salary BETWEEN s.LOWEST_SALARY AND s.HIGHEST_SALARY)
+SELECT 
+	averege.name, 
+	averege.salary, 
+	d.name
+FROM averege
+JOIN DEPARTMENT d 
+ON averege.dept_id = d.DEPT_ID 
+WHERE averege.salary > avgsal;
+
+--find names of three employees whose salary is the highest
+SELECT * FROM (
+				SELECT 
+					name, salary
+				FROM 
+					EMPLOYEES 
+				ORDER BY salary DESC)
+WHERE rownum <=3
+;
+
+SELECT 
+	name, salary
+FROM 
+	EMPLOYEES 
+ORDER BY salary DESC
+FETCH FIRST 3 ROWS ONLY ;
+
+--find name, salary, dept name and averege salary in the department 
+--for all emploees whose salary exceed the averege in their department 
+WITH averege AS (
+				SELECT 
+					e.*,
+					round(AVG(salary) OVER (PARTITION BY dept_id),2) avgsal
+				FROM 
+					EMPLOYEES e)
+SELECT 
+	name, 
+	SALARY, 
+	DEPT_ID ,
+	avgsal
+FROM 
+	averege 
+WHERE salary > avgsal;
+	
+--make a list of names and hire date of all employees
+--add a new column named MAXDATE and put (*) next to the employee hired most recently 
+
 
