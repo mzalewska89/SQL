@@ -1214,4 +1214,52 @@ WHERE salary > avgsal;
 --make a list of names and hire date of all employees
 --add a new column named MAXDATE and put (*) next to the employee hired most recently 
 
+SELECT 
+	name, 
+	hire_date,
+	CASE hire_date
+		WHEN 
+			(SELECT MAX(hire_date)
+			FROM EMPLOYEES)
+		THEN '*'
+	END MAXDATE
+FROM 	
+	EMPLOYEES
+GROUP BY HIRE_DATE , name 	;
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
